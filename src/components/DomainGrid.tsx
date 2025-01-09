@@ -10,7 +10,16 @@ import {
 } from "@/components/ui/table"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
-import { ArrowUp } from "lucide-react"
+import { ArrowUp, Wand2 } from "lucide-react"
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogAction } from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 // 定义音节类型
 type Syllable = {
@@ -55,6 +64,9 @@ export function DomainGrid() {
   const [mounted, setMounted] = useState(false);
   const [domainStatuses, setDomainStatuses] = useState<Record<string, DomainStatus>>({});
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showVipAlert, setShowVipAlert] = useState(false);
+  const [selectedTld, setSelectedTld] = useState<string>('ai');
+  const [showTldAlert, setShowTldAlert] = useState(false);
 
   // 修改滚动到指定字母区域的函数
   const scrollToLetter = (letter: string) => {
@@ -142,6 +154,64 @@ export function DomainGrid() {
 
   return (
     <div className="container mx-auto py-2">
+      <AlertDialog open={showVipAlert} onOpenChange={setShowVipAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>功能开发中</AlertDialogTitle>
+            <AlertDialogDescription className="pt-2">
+              批量查询功能即将推出，敬请期待！
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowVipAlert(false)}>
+              知道了
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showTldAlert} onOpenChange={setShowTldAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>功能开发中</AlertDialogTitle>
+            <AlertDialogDescription className="pt-2">
+              目前仅支持 .ai 域名后缀查询，其他后缀正在开发中，敬请期待！
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => setShowTldAlert(false)}>
+              知道了
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="flex justify-center items-center gap-4 mb-4">
+        <span className="text-sm font-medium">域名后缀</span>
+        <Select
+          value={selectedTld}
+          onValueChange={(value) => {
+            if (value !== 'ai') {
+              setShowTldAlert(true);
+              setSelectedTld('ai');
+            } else {
+              setSelectedTld(value);
+            }
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="选择域名后缀" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ai">.ai</SelectItem>
+            <SelectItem value="com">.com</SelectItem>
+            <SelectItem value="net">.net</SelectItem>
+            <SelectItem value="org">.org</SelectItem>
+            <SelectItem value="io">.io</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* 导航栏改为可横向滚动 */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b mb-4 overflow-x-auto">
         <div className="flex justify-start md:justify-center gap-2 py-2 px-4 min-w-full">
@@ -165,9 +235,18 @@ export function DomainGrid() {
               id={`section-${syllable.letter}`}
               className="border rounded-lg overflow-hidden" // 移除 overflow-x-auto
             >
-              <h2 className="px-4 py-2 font-bold text-sm border-b bg-muted">
-                {syllable.letter} 开头的组合
-              </h2>
+              <div className="px-4 py-2 font-bold text-sm border-b bg-muted flex justify-between items-center">
+                <span>{syllable.letter} 开头的组合</span>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-7 text-xs gap-1"
+                  onClick={() => setShowVipAlert(true)}
+                >
+                  <Wand2 className="h-3 w-3" />
+                  批量查询
+                </Button>
+              </div>
               <div className="overflow-x-auto"> {/* 添加滚动容器 */}
                 <Table>
                   <TableHeader>
