@@ -28,10 +28,6 @@ export default function Home() {
                         目前支持查询 .ai 域名后缀（其他后缀正在开发中）
                       </li>
                       <li className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground"></span>
-                        <span className="font-medium text-primary">点击任意域名组合即可查询其注册状态</span>
-                      </li>
-                      <li className="flex items-center gap-2">
                         <span className="h-1 w-1 rounded-full bg-primary"></span>
                         可以使用字母导航栏快速跳转到指定字母开头的域名区域
                       </li>
@@ -71,6 +67,13 @@ export default function Home() {
                     </ul>
                   </div>
                 </div>
+              </div>
+
+              {/* 添加操作提示 */}
+              <div className="mt-4 text-center">
+                <span className="inline-block px-4 py-2 bg-muted/50 rounded-lg font-medium text-primary">
+                  👇🏻 点击下方列表中任意域名组合即可查询其注册状态
+                </span>
               </div>
             </div>
           </div>
