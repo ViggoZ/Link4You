@@ -29,6 +29,30 @@
 - **Y**: Ya, Ye, Yi, Yo, Yu
 - **Z**: Za, Ze, Zi, Zo, Zu
 
+const syllables: Syllable[] = [
+  { letter: "B", combinations: ["Ba", "Be", "Bi", "Bo", "Bu"] },
+  { letter: "C", combinations: ["Ca", "Ce", "Ci", "Co", "Cu"] },
+  { letter: "D", combinations: ["Da", "De", "Di", "Do", "Du"] },
+  { letter: "F", combinations: ["Fa", "Fe", "Fi", "Fo", "Fu"] },
+  { letter: "G", combinations: ["Ga", "Ge", "Gi", "Go", "Gu"] },
+  { letter: "H", combinations: ["Ha", "He", "Hi", "Ho", "Hu"] },
+  { letter: "J", combinations: ["Ja", "Je", "Ji", "Jo", "Ju"] },
+  { letter: "K", combinations: ["Ka", "Ke", "Ki", "Ko", "Ku"] },
+  { letter: "L", combinations: ["La", "Le", "Li", "Lo", "Lu"] },
+  { letter: "M", combinations: ["Ma", "Me", "Mi", "Mo", "Mu"] },
+  { letter: "N", combinations: ["Na", "Ne", "Ni", "No", "Nu"] },
+  { letter: "P", combinations: ["Pa", "Pe", "Pi", "Po", "Pu"] },
+  { letter: "Q", combinations: ["Qu"] },
+  { letter: "R", combinations: ["Ra", "Re", "Ri", "Ro", "Ru"] },
+  { letter: "S", combinations: ["Sa", "Se", "Si", "So", "Su"] },
+  { letter: "T", combinations: ["Ta", "Te", "Ti", "To", "Tu"] },
+  { letter: "V", combinations: ["Va", "Ve", "Vi", "Vo", "Vu"] },
+  { letter: "W", combinations: ["Wa", "We", "Wi", "Wo", "Wu"] },
+  { letter: "X", combinations: ["Xa", "Xe", "Xi", "Xo", "Xu"] },
+  { letter: "Y", combinations: ["Ya", "Ye", "Yi", "Yo", "Yu"] },
+  { letter: "Z", combinations: ["Za", "Ze", "Zi", "Zo", "Zu"] }
+];
+
 ## 2. 核心功能需求
 
 ### 2.1 音节组合生成器
