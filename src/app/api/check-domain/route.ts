@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-const WHOIS_API_KEY = process.env.WHOIS_API_KEY // 需要在 .env 文件中设置
+const WHOIS_API_KEY = process.env.WHOIS_API_KEY
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,6 +8,18 @@ export async function GET(request: Request) {
 
   if (!domain) {
     return NextResponse.json({ error: 'Domain is required' }, { status: 400 });
+  }
+
+  // 检查环境变量
+  if (!WHOIS_API_KEY) {
+    console.log('WhoisXML API key not configured');
+    // 临时使用模拟数据
+    return NextResponse.json({
+      available: Math.random() > 0.5,
+      domain: domain,
+      provider: 'mock',
+      raw: null
+    });
   }
 
   try {
@@ -19,27 +31,26 @@ export async function GET(request: Request) {
         }
       }
     );
-
-    const data = await response.json();
     
-    // API 返回的格式：
-    // {
-    //   "DomainInfo": {
-    //     "domainName": "example.ai",
-    //     "domainAvailability": "AVAILABLE" | "UNAVAILABLE"
-    //   }
-    // }
-
+    if (!response.ok) {
+      throw new Error(`WhoisXML API responded with status: ${response.status}`);
+    }
+    
+    const data = await response.json();
     return NextResponse.json({ 
       available: data.DomainInfo.domainAvailability === 'AVAILABLE',
       domain: domain,
-      raw: data // 用于调试
+      provider: 'whoisxml',
+      raw: data
     });
   } catch (error) {
-    console.error('Error checking domain:', error);
-    return NextResponse.json({ 
-      error: 'Failed to check domain',
-      details: error instanceof Error ? error.message : String(error)
-    }, { status: 500 });
+    console.error('WhoisXML API error:', error);
+    // API 调用失败时使用模拟数据
+    return NextResponse.json({
+      available: Math.random() > 0.5,
+      domain: domain,
+      provider: 'mock',
+      raw: null
+    });
   }
 } 

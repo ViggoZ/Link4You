@@ -8,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react"
+import { cn } from "@/lib/utils"
 
 // 定义音节类型
 type Syllable = {
@@ -46,76 +46,66 @@ const allSyllables = syllables.flatMap(s => s.combinations);
 
 type DomainStatus = {
   name: string;
-  available: boolean;
+  available: boolean | null;
   loading?: boolean;
 }
 
 export function DomainGrid() {
   const [mounted, setMounted] = useState(false);
   const [domainStatuses, setDomainStatuses] = useState<Record<string, DomainStatus>>({});
-  const [isChecking, setIsChecking] = useState(false);
-
-  // 检查单个域名
-  const checkDomain = async (domain: string) => {
-    try {
-      // 这里需要替换成实际的 API 调用
-      const response = await fetch(`/api/check-domain?domain=${domain}.ai`);
-      const data = await response.json();
-      return data.available;
-    } catch (error) {
-      console.error(`Error checking domain ${domain}:`, error);
-      return null;
-    }
-  };
-
-  // 批量检查域名
-  const checkAllDomains = async () => {
-    setIsChecking(true);
-    
-    for (const syllable of syllables) {
-      for (const firstSyl of syllable.combinations) {
-        for (const secondSyl of allSyllables) {
-          const domain = firstSyl + secondSyl;
-          setDomainStatuses(prev => ({
-            ...prev,
-            [domain]: { name: domain, available: false, loading: true }
-          }));
-
-          const available = await checkDomain(domain);
-          
-          setDomainStatuses(prev => ({
-            ...prev,
-            [domain]: { name: domain, available: !!available, loading: false }
-          }));
-
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
-    }
-    
-    setIsChecking(false);
-  };
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // 检查单个域名
+  const checkDomain = async (domain: string) => {
+    try {
+      setDomainStatuses(prev => ({
+        ...prev,
+        [domain]: { name: domain, available: null, loading: true }
+      }));
+
+      const response = await fetch(`/api/check-domain?domain=${domain}.ai`);
+      const data = await response.json();
+      console.log('Domain check response:', data);
+
+      // 检查是否有错误响应
+      if (data.raw?.code === 'ACCESS_DENIED' || data.error) {
+        console.error('API access error:', data.raw?.message || data.error);
+        setDomainStatuses(prev => ({
+          ...prev,
+          [domain]: { name: domain, available: null, loading: false }
+        }));
+        return;
+      }
+
+      setDomainStatuses(prev => ({
+        ...prev,
+        [domain]: { name: domain, available: data.available, loading: false }
+      }));
+    } catch (error) {
+      console.error(`Error checking domain ${domain}:`, error);
+      setDomainStatuses(prev => ({
+        ...prev,
+        [domain]: { name: domain, available: null, loading: false }
+      }));
+    }
+  };
+
+  // 处理单元格点击
+  const handleCellClick = (domain: string) => {
+    if (!domainStatuses[domain]?.loading) {
+      checkDomain(domain);
+    }
+  };
 
   if (!mounted) return null;
 
   return (
     <div className="container mx-auto py-2">
       <div className="w-full h-full">
-        <div className="sticky top-0 z-30 bg-background p-2 border-b">
-          <Button 
-            onClick={checkAllDomains} 
-            disabled={isChecking}
-            size="sm"
-          >
-            {isChecking ? "检查中..." : "检查所有域名"}
-          </Button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
           {syllables.map((syllable) => (
             <div key={syllable.letter} className="border rounded-lg overflow-x-auto">
               <h2 className="px-2 py-1 font-bold text-sm border-b bg-muted">
@@ -147,12 +137,15 @@ export function DomainGrid() {
                         
                         return (
                           <TableCell 
-                            key={j} 
-                            className={`text-center p-1 text-xs ${
-                              status?.loading ? 'animate-pulse' :
-                              status?.available ? 'bg-green-100 text-green-800' :
-                              status ? 'bg-red-100 text-red-800' : ''
-                            }`}
+                            key={j}
+                            onClick={() => handleCellClick(domain)}
+                            className={cn(
+                              "text-center p-1 text-xs cursor-pointer transition-colors",
+                              status?.loading && "animate-pulse bg-muted",
+                              status?.available === true && "bg-green-100 hover:bg-green-200 text-green-800",
+                              status?.available === false && "bg-red-100 hover:bg-red-200 text-red-800",
+                              !status && "hover:bg-muted"
+                            )}
                           >
                             {domain}
                           </TableCell>
