@@ -10,6 +10,7 @@ import { FAQ } from "@/components/FAQ";
 import { Newsletter } from "@/components/Newsletter";
 import { Footer } from "@/components/Footer";
 import { ToolIntro } from "@/components/ToolIntro";
+import { Blog } from "@/components/Blog";
 export default function HomePage() {
   return (
     <>
@@ -23,6 +24,7 @@ export default function HomePage() {
         <Testimonials />
         <Pricing />
         <FAQ />
+        <Blog />
         <Newsletter />
         <ToolIntro 
           title="Domain Tools" 
