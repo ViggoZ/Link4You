@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "双音节域名查询 | 四字母域名注册状态检查工具",
-  description: "快速查询由两个双字母音节组合而成的四字母域名（如 BAKA、KUMA 等）的注册状态，支持 .ai 等多个域名后缀。",
+  title: "Best URL - Domain Tools Collection",
+  description: "Professional domain name tools for bulk domain search, availability checking, and domain management.",
 };
 
 export default function RootLayout({
